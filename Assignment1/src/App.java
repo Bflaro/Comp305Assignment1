@@ -4,7 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.IOException;
+import java.security.Key;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class App 
@@ -14,6 +16,7 @@ public class App
         System.out.println("Assignment 1!");
         ArrayList<String> words = readWords("res\\words.txt"); //readWords function
         HashMap<String, Integer> wordCounter = buildHashMap(words); // count number of worrds function
+        sortWords(wordCounter);
         createHTMLFile(wordCounter);
     }
 
@@ -71,6 +74,56 @@ public class App
         }   
         return wordCounter;
     }
+    //PART 2: Sorting the Table by Frequency in ASC order
+    private static void sortWords(HashMap<String, Integer> wordCounter)
+    {
+        //initializes counter for id / creates a new array
+        int id = 0;
+        System.out.println("sortwords!");
+        ArrayList<wordSort> wordsList = new ArrayList<>();
+        //This for loop creates an array adding an id tag to every entry to the table data
+        for(String key: wordCounter.keySet())
+        {
+        wordsList.add(new wordSort(id,key,wordCounter.get(key)));
+        id++;
+        }
+        //this sorts the array is ascending order
+        Collections.sort(wordsList);
+
+        //the following code is a repeat of CreateHTMLFile but using the new array instead
+        File file = new File("sorted.html");
+
+        try {
+            FileWriter fileWriter = new FileWriter(file);
+            StringBuilder builder = new StringBuilder();
+
+            //adds CSS to the table
+            final String css = "<style>"
+                + "td,tr { border: groove} "
+                + "table, td,tr { border-collapse: collapse} "
+                +"</style>";
+                builder.append(css).append("\n");
+
+
+            builder.append("<h1>Word Count Table</h1>");
+            //Builds Table
+            builder.append("<table>");
+            for(wordSort wordSort: wordsList)
+            {
+                builder.append("<tr>");
+                builder.append("<td>"+ wordSort.word +"</td>");
+                builder.append("<td>"+ wordSort.frequency +"</td>");
+                builder.append("</tr>");
+            }
+            builder.append("</table>");
+
+            fileWriter.append(builder.toString());
+            fileWriter.close();
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
+    }
 
     //Create an HTML file output with a table
     private static void createHTMLFile(HashMap<String, Integer> wordCounter)
@@ -108,10 +161,10 @@ public class App
             e.printStackTrace();
         }
 
-        // prints data result in console
+        /*// prints data result in console
         for(String keyWord: wordCounter.keySet())
         {
             System.out.println(keyWord + ": " + wordCounter.get(keyWord));
-        }
+        }*/
     }
 }
